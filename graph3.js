@@ -1,0 +1,82 @@
+
+d3.csv("data/perceived health by csv.csv", d => ({
+    value: +d.OBS_VALUE,
+    year: +d.TIME_PERIOD,
+    ecoStatus: d.SOCIO_ECON_STATUS ? d.SOCIO_ECON_STATUS.toLowerCase() : ""
+})).then(data => {
+    // Only q1 and q5
+    const filtered = data.filter(d =>
+        (d.ecoStatus === "q1" || d.ecoStatus === "q5") &&
+        !isNaN(d.value) &&
+        d.year
+    );
+    // Group and average by year
+    const years = [...new Set(filtered.map(d => d.year))].sort((a, b) => a - b);
+    const q1Data = years.map(year => {
+        const values = filtered.filter(d => d.year === year && d.ecoStatus === "q1").map(d => d.value);
+        return { year, avg: values.length ? d3.mean(values) : null };
+    });
+    const q5Data = years.map(year => {
+        const values = filtered.filter(d => d.year === year && d.ecoStatus === "q5").map(d => d.value);
+        return { year, avg: values.length ? d3.mean(values) : null };
+    });
+
+       const width = window.innerWidth * 2 / 3;
+    const height = width * 0.55;
+    // SVG dimensions
+    const svg = d3.select("#graph3")
+                     .attr("width", width)
+   .attr("height", height)
+ 
+
+    const margin = { top: 30, right: 40, bottom: 40, left: 60 };
+    const innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
+    const g = svg.append("g")
+   .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // Scales
+    const x = d3.scaleLinear()
+        .domain(d3.extent(years))
+        .range([0, innerWidth]);
+    const allValues = q1Data.concat(q5Data).map(d => d.avg).filter(v => v != null);
+    const y = d3.scaleLinear()
+        .domain([d3.min(allValues), d3.max(allValues)]).nice()
+        .range([innerHeight, 0]);
+
+    // Axes
+    g.append("g")
+        .attr("transform", `translate(0,${innerHeight})`)
+        .call(d3.axisBottom(x).ticks(years.length).tickFormat(d3.format("d")));
+    g.append("g")
+        .call(d3.axisLeft(y));
+
+    // Lines
+    const line = d3.line()
+        .defined(d => d.avg != null)
+        .x(d => x(d.year))
+        .y(d => y(d.avg));
+
+    g.append("path")
+        .datum(q1Data)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 2)
+        .attr("d", line);
+
+    g.append("path")
+        .datum(q5Data)
+        .attr("fill", "none")
+        .attr("stroke", "tomato")
+        .attr("stroke-width", 2)
+        .attr("d", line);
+
+    // Axis labels
+    svg.append("text")
+        .attr("x", margin.left + innerWidth / 2)
+        .attr("y", height - 4)
+        .attr("text-anchor", "middle")
+        .text("Year");
+
+
+});

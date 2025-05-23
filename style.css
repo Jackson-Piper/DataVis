@@ -1,0 +1,81 @@
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: #f8f9fa;
+}
+
+/* === Graph 1: Countries by OECD Status === */
+#graph1 {
+  display: block;
+}
+
+#graph1 .country {
+  fill: #7090ad;
+  stroke: #000000;
+  stroke-width: 0.5;
+}
+
+#graph1 .country.oecd {
+  fill: #1f77b4; /* blue */
+}
+
+#graph1 .country.non-oecd {
+  fill: #ff7f0e; /* orange */
+}
+
+#graph1 .country.no-data {
+  fill: #585858; /* gray */
+}
+
+/* === Graph 2: Bubble/Choropleth Map + Tooltip === */
+#graph2 .country {
+  stroke: #000;
+  stroke-width: 0.5;
+}
+
+#graph2 .bubble {
+  fill: #00bcd4;
+  fill-opacity: 0.7;
+  stroke: #111;
+  stroke-width: 1;
+  pointer-events: all;
+  transition: r 0.2s;
+}
+#graph2 .bubble:hover {
+  fill: #ffd600;
+  stroke: #ff9800;
+}
+
+/* Tooltip used by graph2 */
+.tooltip {
+  position: absolute;
+  background: #fff;
+  color: #222;
+  padding: 8px 14px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  font-size: 1rem;
+  line-height: 1.2;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+/* === Graph 3: Line Graph === */
+#graph3 {
+  background: #fff;
+  border: 1px solid #eee;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+}
+
+/* Optional: Add spacing between SVGs */
+svg {
+  display: block;
+  margin: 24px 0;
+  max-width: 90vw;
+}
